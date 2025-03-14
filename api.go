@@ -555,7 +555,6 @@ func (api *API) GetProducers(ctx context.Context) (out *ProducersResp, err error
 
 func (api *API) GetBlockByNum(ctx context.Context, num uint32) (out *BlockResp, err error) {
 	err = api.call(ctx, "chain", "get_block", M{"block_num_or_id": fmt.Sprintf("%d", num)}, &out)
-	//err = api.call("chain", "get_block", M{"block_num_or_id": num}, &out)
 	return
 }
 
@@ -661,8 +660,12 @@ func (api *API) call(ctx context.Context, baseAPI string, endpoint string, body 
 		return err
 	}
 
+	//api.Header.Set("Accept", "application/json")
+
 	targetURL := fmt.Sprintf("%s/v1/%s/%s", api.BaseURL, baseAPI, endpoint)
 	req, err := http.NewRequest("POST", targetURL, jsonBody)
+	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+
 	if err != nil {
 		return fmt.Errorf("NewRequest: %w", err)
 	}
@@ -744,19 +747,24 @@ var ErrNotFound = errors.New("resource not found")
 
 type M map[string]interface{}
 
+type BlockRequest struct {
+	BlockNumOrID string `json:"block_num_or_id" validate:"required"`
+}
+
 func enc(v interface{}) (io.Reader, error) {
 	if v == nil {
-		return nil, nil
+		return bytes.NewReader([]byte("{}")), nil
 	}
 
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(false)
 
-	err := encoder.Encode(v)
-	if err != nil {
+	if err := encoder.Encode(v); err != nil {
 		return nil, err
 	}
 
-	return buffer, nil
+	// 关键修复：移除自动添加的换行符
+	jsonStr := bytes.TrimSpace(buffer.Bytes())
+	return bytes.NewReader(jsonStr), nil
 }

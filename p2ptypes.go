@@ -462,6 +462,8 @@ type SignedBlockHeader struct {
 }
 
 type SignedBlock struct {
+	ID       string `json:"id"`
+	BlockNum int    `json:"block_num"`
 	SignedBlockHeader
 	Transactions    []TransactionReceipt `json:"transactions"`
 	BlockExtensions []*Extension         `json:"block_extensions"`

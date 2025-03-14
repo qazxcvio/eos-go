@@ -340,6 +340,7 @@ func (s *SignedTransaction) Pack(compression CompressionType) (*PackedTransactio
 // signatures, and all. They circulate like that on the P2P net, and
 // that's how they are stored.
 type PackedTransaction struct {
+	TxID                  string          `json:"id"`
 	Signatures            []ecc.Signature `json:"signatures"`
 	Compression           CompressionType `json:"compression"` // in C++, it's an enum, not sure how it Binary-marshals..
 	PackedContextFreeData HexBytes        `json:"packed_context_free_data"`
