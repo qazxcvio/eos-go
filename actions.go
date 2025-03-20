@@ -27,18 +27,18 @@ type SetABI struct {
 
 // Action
 type Action struct {
-	Account       AccountName       `json:"account"`
-	Name          ActionName        `json:"name"`
-	Authorization []PermissionLevel `json:"authorization,omitempty"`
+	Account AccountName `json:"account"`
+	Name    ActionName  `json:"name"`
+	//Authorization []PermissionLevel `json:"authorization,omitempty"`
 	ActionData
 }
 
 func (a Action) Digest() Checksum256 {
 	toEat := jsonActionToServer{
-		Account:       a.Account,
-		Name:          a.Name,
-		Authorization: a.Authorization,
-		Data:          a.ActionData.HexData,
+		Account: a.Account,
+		Name:    a.Name,
+		//Authorization: a.Authorization,
+		//Data: a.ActionData.HexData,
 	}
 	bin, err := MarshalBinary(toEat)
 	if err != nil {
@@ -51,7 +51,7 @@ func (a Action) Digest() Checksum256 {
 }
 
 type ActionData struct {
-	HexData  HexBytes    `json:"hex_data,omitempty"`
+	//HexData  HexBytes    `json:"hex_data,omitempty"`
 	Data     interface{} `json:"data,omitempty" eos:"-"`
 	abi      []byte      // TBD: we could use the ABI to decode in obj
 	toServer bool
@@ -59,7 +59,7 @@ type ActionData struct {
 
 func NewActionData(obj interface{}) ActionData {
 	return ActionData{
-		HexData:  []byte{},
+		//HexData:  []byte{},
 		Data:     obj,
 		toServer: true,
 	}
@@ -67,7 +67,7 @@ func NewActionData(obj interface{}) ActionData {
 
 func NewActionDataFromHexData(data []byte) ActionData {
 	return ActionData{
-		HexData:  data,
+		//HexData:  data,
 		Data:     nil,
 		toServer: true,
 	}
@@ -97,10 +97,10 @@ type jsonActionFromServer struct {
 }
 
 func (a *Action) MarshalJSON() ([]byte, error) {
-	auths := a.Authorization
-	if auths == nil {
-		auths = make([]PermissionLevel, 0)
-	}
+	//auths := a.Authorization
+	//if auths == nil {
+	//	auths = make([]PermissionLevel, 0)
+	//}
 	if a.toServer {
 		data, err := a.ActionData.EncodeActionData()
 		if err != nil {
@@ -108,26 +108,26 @@ func (a *Action) MarshalJSON() ([]byte, error) {
 		}
 
 		return json.Marshal(&jsonActionToServer{
-			Account:       a.Account,
-			Name:          a.Name,
-			Authorization: auths,
-			Data:          data,
+			Account: a.Account,
+			Name:    a.Name,
+			//Authorization: auths,
+			Data: data,
 		})
 	}
 
 	return json.Marshal(&jsonActionFromServer{
-		Account:       a.Account,
-		Name:          a.Name,
-		Authorization: auths,
-		HexData:       a.HexData,
-		Data:          a.Data,
+		Account: a.Account,
+		Name:    a.Name,
+		//Authorization: auths,
+		//HexData: a.HexData,
+		Data: a.Data,
 	})
 }
 
 func (data *ActionData) EncodeActionData() ([]byte, error) {
-	if data.Data == nil {
-		return data.HexData, nil
-	}
+	//if data.Data == nil {
+	//	return data.HexData, nil
+	//}
 
 	buf := new(bytes.Buffer)
 	encoder := NewEncoder(buf)

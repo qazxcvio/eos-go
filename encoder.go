@@ -654,7 +654,8 @@ func (e *Encoder) writeActionData(actionData ActionData) (err error) {
 		return e.writeByteArray(raw)
 	}
 
-	return e.writeByteArray(actionData.HexData)
+	//return e.writeByteArray(actionData.HexData)
+	return e.writeByteArray([]byte{})
 }
 
 // lt evaluates the comparison a < b.

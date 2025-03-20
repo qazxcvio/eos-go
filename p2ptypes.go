@@ -423,18 +423,18 @@ type ProtocolFeatureActivationSet struct {
 }
 
 type BlockHeader struct {
-	Timestamp        BlockTimestamp `json:"timestamp"`
-	Producer         AccountName    `json:"producer"`
-	Confirmed        uint16         `json:"confirmed"`
-	Previous         Checksum256    `json:"previous"`
-	TransactionMRoot Checksum256    `json:"transaction_mroot"`
-	ActionMRoot      Checksum256    `json:"action_mroot"`
-	ScheduleVersion  uint32         `json:"schedule_version"`
+	Timestamp string `json:"timestamp"`
+	//Producer         AccountName    `json:"producer"`
+	//Confirmed        uint16         `json:"confirmed"`
+	Previous Checksum256 `json:"previous"`
+	//TransactionMRoot Checksum256    `json:"transaction_mroot"`
+	//ActionMRoot      Checksum256    `json:"action_mroot"`
+	//ScheduleVersion  uint32         `json:"schedule_version"`
 
 	// EOSIO 1.x
-	NewProducersV1 *ProducerSchedule `json:"new_producers,omitempty" eos:"optional"`
+	//NewProducersV1 *ProducerSchedule `json:"new_producers,omitempty" eos:"optional"`
 
-	HeaderExtensions []*Extension `json:"header_extensions"`
+	//HeaderExtensions []*Extension `json:"header_extensions"`
 }
 
 func (b *BlockHeader) BlockNumber() uint32 {
@@ -458,15 +458,15 @@ func (b *BlockHeader) BlockID() (Checksum256, error) {
 
 type SignedBlockHeader struct {
 	BlockHeader
-	ProducerSignature ecc.Signature `json:"producer_signature"`
+	//ProducerSignature ecc.Signature `json:"producer_signature"`
 }
 
 type SignedBlock struct {
 	ID       string `json:"id"`
 	BlockNum int    `json:"block_num"`
 	SignedBlockHeader
-	Transactions    []TransactionReceipt `json:"transactions"`
-	BlockExtensions []*Extension         `json:"block_extensions"`
+	Transactions []TransactionReceipt `json:"transactions"`
+	//BlockExtensions []*Extension         `json:"block_extensions"`
 }
 
 func (m *SignedBlock) String() string {
@@ -478,9 +478,9 @@ func (m *SignedBlock) GetType() P2PMessageType {
 }
 
 type TransactionReceiptHeader struct {
-	Status               TransactionStatus `json:"status"`
-	CPUUsageMicroSeconds uint32            `json:"cpu_usage_us"`
-	NetUsageWords        Varuint32         `json:"net_usage_words"`
+	Status TransactionStatus `json:"status"`
+	//CPUUsageMicroSeconds uint32            `json:"cpu_usage_us"`
+	//NetUsageWords        Varuint32         `json:"net_usage_words"`
 }
 
 type TransactionReceipt struct {

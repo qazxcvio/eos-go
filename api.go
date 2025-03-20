@@ -114,11 +114,11 @@ func (api *API) UsePartialRequiredKeys() {
 func (api *API) getPartialRequiredKeys(ctx context.Context, tx *Transaction) ([]ecc.PublicKey, error) {
 	// loop to get all the authorizers, and dedupe
 	var authorizers []PermissionLevel
-	for _, act := range tx.Actions {
-		for _, pl := range act.Authorization {
-			authorizers = append(authorizers, pl)
-		}
-	}
+	//for _, act := range tx.Actions {
+	//for _, pl := range act.Authorization {
+	//	authorizers = append(authorizers, pl)
+	//}
+	//}
 
 	ourKeys, err := api.Signer.AvailableKeys(ctx)
 	if err != nil {

@@ -6,18 +6,15 @@ import (
 	"compress/zlib"
 	"context"
 	"crypto/sha256"
-	"encoding/binary"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/eoscanada/eos-go/ecc"
 	"io"
 	"io/ioutil"
 	"math"
 	"reflect"
-	"time"
-
-	"github.com/eoscanada/eos-go/ecc"
 )
 
 type TransactionHeader struct {
@@ -34,11 +31,11 @@ type TransactionHeader struct {
 //
 // **Note** In EOSIO codebase, used within both `signed_transaction` and `transaction`.
 type Transaction struct {
-	TransactionHeader
+	//TransactionHeader
 
-	ContextFreeActions []*Action    `json:"context_free_actions"`
-	Actions            []*Action    `json:"actions"`
-	Extensions         []*Extension `json:"transaction_extensions"`
+	//ContextFreeActions []*Action    `json:"context_free_actions"`
+	Actions []*Action `json:"actions"`
+	//Extensions         []*Extension `json:"transaction_extensions"`
 }
 
 // NewTransaction creates a transaction. Unless you plan on adding HeadBlockID later, to be complete, opts should contain it.  Sign
@@ -52,9 +49,9 @@ func NewTransaction(actions []*Action, opts *TxOptions) *Transaction {
 	return tx
 }
 
-func (tx *Transaction) SetExpiration(in time.Duration) {
-	tx.Expiration = JSONTime{time.Now().UTC().Add(in)}
-}
+//func (tx *Transaction) SetExpiration(in time.Duration) {
+//	tx.Expiration = JSONTime{time.Now().UTC().Add(in)}
+//}
 
 const (
 	EOS_ProtocolFeatureActivation BlockHeaderExtensionType = iota
@@ -193,26 +190,26 @@ func unmarshalTypeError(value interface{}, reflectTypeHost interface{}, target i
 func (tx *Transaction) Fill(headBlockID Checksum256, delaySecs, maxNetUsageWords uint32, maxCPUUsageMS uint8) {
 	tx.setRefBlock(headBlockID)
 
-	if tx.ContextFreeActions == nil {
-		tx.ContextFreeActions = make([]*Action, 0, 0)
-	}
-	if tx.Extensions == nil {
-		tx.Extensions = make([]*Extension, 0, 0)
-	}
+	//if tx.ContextFreeActions == nil {
+	//	tx.ContextFreeActions = make([]*Action, 0, 0)
+	//}
+	//if tx.Extensions == nil {
+	//	tx.Extensions = make([]*Extension, 0, 0)
+	//}
 
-	tx.MaxNetUsageWords = Varuint32(maxNetUsageWords)
-	tx.MaxCPUUsageMS = maxCPUUsageMS
-	tx.DelaySec = Varuint32(delaySecs)
+	//tx.MaxNetUsageWords = Varuint32(maxNetUsageWords)
+	//tx.MaxCPUUsageMS = maxCPUUsageMS
+	//tx.DelaySec = Varuint32(delaySecs)
 
-	tx.SetExpiration(30 * time.Second)
+	//tx.SetExpiration(30 * time.Second)
 }
 
 func (tx *Transaction) setRefBlock(blockID []byte) {
 	if len(blockID) == 0 {
 		return
 	}
-	tx.RefBlockNum = uint16(binary.BigEndian.Uint32(blockID[:4]))
-	tx.RefBlockPrefix = binary.LittleEndian.Uint32(blockID[8:16])
+	//tx.RefBlockNum = uint16(binary.BigEndian.Uint32(blockID[:4]))
+	//tx.RefBlockPrefix = binary.LittleEndian.Uint32(blockID[8:16])
 }
 
 type TransactionTrace struct {
@@ -326,11 +323,11 @@ func (s *SignedTransaction) Pack(compression CompressionType) (*PackedTransactio
 	}
 
 	packed := &PackedTransaction{
-		Signatures:            s.Signatures,
-		Compression:           compression,
-		PackedContextFreeData: rawcfd,
-		PackedTransaction:     rawtrx,
-		wasPackedLocally:      true,
+		//Signatures:            s.Signatures,
+		Compression: compression,
+		//PackedContextFreeData: rawcfd,
+		//PackedTransaction:     rawtrx,
+		//wasPackedLocally:      true,
 	}
 
 	return packed, nil
@@ -340,37 +337,37 @@ func (s *SignedTransaction) Pack(compression CompressionType) (*PackedTransactio
 // signatures, and all. They circulate like that on the P2P net, and
 // that's how they are stored.
 type PackedTransaction struct {
-	TxID                  string          `json:"id"`
-	Signatures            []ecc.Signature `json:"signatures"`
-	Compression           CompressionType `json:"compression"` // in C++, it's an enum, not sure how it Binary-marshals..
-	PackedContextFreeData HexBytes        `json:"packed_context_free_data"`
-	PackedTransaction     HexBytes        `json:"packed_trx"`
-	ContextFreeData       []string        `json:"context_free_data,omitempty" eos:"-"`
-	Transaction           *Transaction    `json:"transaction,omitempty" eos:"-"`
+	TxID string `json:"id"`
+	//Signatures            []ecc.Signature `json:"signatures"`
+	Compression CompressionType `json:"compression"` // in C++, it's an enum, not sure how it Binary-marshals..
+	//PackedContextFreeData HexBytes        `json:"packed_context_free_data"`
+	//PackedTransaction     HexBytes        `json:"packed_trx"`
+	//ContextFreeData []string     `json:"context_free_data,omitempty" eos:"-"`
+	Transaction *Transaction `json:"transaction,omitempty" eos:"-"`
 
-	wasPackedLocally bool
+	//wasPackedLocally bool
 }
 
 // ID returns the hash of a transaction.
 func (p *PackedTransaction) ID() (Checksum256, error) {
 	h := sha256.New()
 
-	if p.wasPackedLocally {
-		_, _ = h.Write(p.PackedTransaction)
-		return h.Sum(nil), nil
-	}
+	//if p.wasPackedLocally {
+	//	_, _ = h.Write(p.PackedTransaction)
+	//	return h.Sum(nil), nil
+	//}
 
-	signed, err := p.UnpackBare()
-	if err != nil {
-		return nil, err
-	}
+	//signed, err := p.UnpackBare()
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	repacked, err := signed.Pack(CompressionNone)
-	if err != nil {
-		return nil, err
-	}
+	//repacked, err := signed.Pack(CompressionNone)
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	_, _ = h.Write(repacked.PackedTransaction)
+	//_, _ = h.Write(repacked.PackedTransaction)
 	return h.Sum(nil), nil
 }
 
@@ -388,10 +385,10 @@ func (p *PackedTransaction) UnpackBare() (signedTx *SignedTransaction, err error
 
 func (p *PackedTransaction) unpack(bare bool) (signedTx *SignedTransaction, err error) {
 	var txReader io.Reader
-	txReader = bytes.NewBuffer(p.PackedTransaction)
+	//txReader = bytes.NewBuffer(p.PackedTransaction)
 
-	var freeDataReader io.Reader
-	freeDataReader = bytes.NewBuffer(p.PackedContextFreeData)
+	//var freeDataReader io.Reader
+	//freeDataReader = bytes.NewBuffer(p.PackedContextFreeData)
 
 	switch p.Compression {
 	case CompressionZlib:
@@ -400,12 +397,12 @@ func (p *PackedTransaction) unpack(bare bool) (signedTx *SignedTransaction, err 
 			return nil, fmt.Errorf("new reader for tx, %s", err)
 		}
 
-		if len(p.PackedContextFreeData) > 0 {
-			freeDataReader, err = zlib.NewReader(freeDataReader)
-			if err != nil {
-				return nil, fmt.Errorf("new reader for free data, %s", err)
-			}
-		}
+		//if len(p.PackedContextFreeData) > 0 {
+		//	freeDataReader, err = zlib.NewReader(freeDataReader)
+		//	if err != nil {
+		//		return nil, fmt.Errorf("new reader for free data, %s", err)
+		//	}
+		//}
 	}
 
 	data, err := ioutil.ReadAll(txReader)
@@ -432,7 +429,7 @@ func (p *PackedTransaction) unpack(bare bool) (signedTx *SignedTransaction, err 
 
 	signedTx = NewSignedTransaction(&tx)
 	//signedTx.ContextFreeData = contextFreeData
-	signedTx.Signatures = p.Signatures
+	//signedTx.Signatures = p.Signatures
 	signedTx.packed = p
 
 	return

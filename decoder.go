@@ -1256,10 +1256,10 @@ func (d *Decoder) ReadActionData(action *Action) (err error) {
 	if tracer.Enabled() {
 		zlog.Debug("reflect object", typeField("type", iface), zap.Reflect("obj", obj))
 	}
-	err = UnmarshalBinary(action.ActionData.HexData, iface)
-	if err != nil {
-		return fmt.Errorf("decoding Action [%s], %s", obj.Type().Name(), err)
-	}
+	//err = UnmarshalBinary(action.ActionData.HexData, iface)
+	//if err != nil {
+	//	return fmt.Errorf("decoding Action [%s], %s", obj.Type().Name(), err)
+	//}
 
 	action.ActionData.Data = iface
 
